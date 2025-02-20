@@ -4,6 +4,7 @@ import express from "express";
 import cors from "cors";
 import connectToMongo from "./mongodb/connection.js";
 import { authRouter } from "./routes/authRoutes.js";
+import applicationRouter from "./routes/applicationRoutes.js";
 
 const app = express();
 const port = 3001;
@@ -18,6 +19,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/auth", authRouter);
+app.use("/application", applicationRouter);
 
 app.listen(port, () => {
     console.log(`Backend running at http://localhost:${port}`);
