@@ -1,9 +1,21 @@
-function App() {
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import Dashboard from "./pages/Dashboard";
+
+const App = () => {
     return (
-        <div className='p-6 bg-blue-500 text-white'>
-            <h1 className='text-2xl font-bold'>Tailwind CSS is working!</h1>
-        </div>
+        <BrowserRouter>
+            <Routes>
+                <Route path='/' element={<HomePage />} />
+                <Route path='/login' element={<LoginPage />} />
+                <Route path='/register' element={<RegisterPage />} />
+                <Route path='/dashboard' element={<Dashboard />} />
+            </Routes>
+        </BrowserRouter>
     );
-}
+};
 
 export default App;
