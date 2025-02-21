@@ -16,6 +16,10 @@ const UpdateApplicationPage = () => {
         const fetchApplication = async () => {
             try {
                 const token = localStorage.getItem("token");
+                if (!token) {
+                    navigate("/login");
+                    return;
+                }
                 const response = await fetch(
                     `http://localhost:3001/application/get/${appId}`,
                     {
@@ -42,7 +46,7 @@ const UpdateApplicationPage = () => {
         };
 
         fetchApplication();
-    }, [appId]);
+    }, [appId, navigate]);
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
