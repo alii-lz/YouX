@@ -1,6 +1,7 @@
 import express from "express";
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "../config.js";
 
 const authRouter = express.Router();
 
@@ -41,7 +42,7 @@ authRouter.post("/login", async (req, res) => {
         }
 
         // Generate token
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        const token = jwt.sign({ id: user._id }, JWT_SECRET, {
             expiresIn: "1h",
         });
 
@@ -65,7 +66,7 @@ const authMiddleware = async (req, res, next) => {
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, JWT_SECRET);
         req.userId = decoded.id;
         req.authType = "jwt";
         next();

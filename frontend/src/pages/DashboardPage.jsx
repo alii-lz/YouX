@@ -11,6 +11,10 @@ const DashboardPage = () => {
         const fetchApplications = async () => {
             try {
                 const token = localStorage.getItem("token");
+                if (!token) {
+                    navigate("/login");
+                    return;
+                }
                 const response = await fetch(
                     "http://localhost:3001/application/all",
                     {
@@ -34,7 +38,7 @@ const DashboardPage = () => {
         };
 
         fetchApplications();
-    }, []);
+    }, [navigate]);
 
     const handleDelete = async () => {
         if (!selectedApplicationId) {
@@ -49,6 +53,10 @@ const DashboardPage = () => {
 
         try {
             const token = localStorage.getItem("token");
+            if (!token) {
+                navigate("/login");
+                return;
+            }
             const response = await fetch(
                 `http://localhost:3001/application/delete/${selectedApplicationId}`,
                 {

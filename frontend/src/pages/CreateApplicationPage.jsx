@@ -23,6 +23,10 @@ const CreateApplicationPage = () => {
         e.preventDefault();
         try {
             const token = localStorage.getItem("token");
+            if (!token) {
+                navigate("/login");
+                return;
+            }
             const response = await fetch(
                 "http://localhost:3001/application/create",
                 {
@@ -51,8 +55,7 @@ const CreateApplicationPage = () => {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
 
-            const data = await response.json();
-            console.log("Application created:", data);
+            await response.json();
             navigate("/dashboard");
         } catch (error) {
             console.error("Error creating application:", error);
