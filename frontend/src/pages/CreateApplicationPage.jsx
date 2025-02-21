@@ -23,7 +23,6 @@ const CreateApplicationPage = () => {
         e.preventDefault();
         try {
             const token = localStorage.getItem("token");
-            console.log(`token is ${token}`);
             const response = await fetch(
                 "http://localhost:3001/application/create",
                 {
@@ -38,10 +37,12 @@ const CreateApplicationPage = () => {
                         expenses: Number(form.expenses),
                         assets: form.assets
                             .split(",")
-                            .map((item) => item.trim()),
+                            .map((item) => item.trim())
+                            .filter((item) => item !== ""),
                         liabilities: form.liabilities
                             .split(",")
-                            .map((item) => item.trim()),
+                            .map((item) => item.trim())
+                            .filter((item) => item !== ""),
                     }),
                 }
             );
@@ -64,7 +65,7 @@ const CreateApplicationPage = () => {
                 <h2 className='text-2xl font-bold mb-6 text-center'>
                     Create Application
                 </h2>
-                <form>
+                <form onSubmit={handleSubmit}>
                     <div className='mb-4'>
                         <label
                             className='block text-gray-700 font-bold mb-2'
@@ -79,6 +80,7 @@ const CreateApplicationPage = () => {
                             value={form.name}
                             onChange={handleChange}
                             id='name'
+                            required
                         />
                     </div>
                     <div className='mb-4'>
@@ -95,6 +97,7 @@ const CreateApplicationPage = () => {
                             value={form.income}
                             onChange={handleChange}
                             id='income'
+                            required
                         />
                     </div>
                     <div className='mb-4'>
@@ -111,6 +114,7 @@ const CreateApplicationPage = () => {
                             value={form.expenses}
                             onChange={handleChange}
                             id='expenses'
+                            required
                         />
                     </div>
                     <div className='mb-4'>
@@ -127,6 +131,7 @@ const CreateApplicationPage = () => {
                             value={form.assets}
                             onChange={handleChange}
                             id='assets'
+                            required
                         />
                     </div>
                     <div className='mb-4'>
@@ -143,6 +148,7 @@ const CreateApplicationPage = () => {
                             value={form.liabilities}
                             onChange={handleChange}
                             id='liabilities'
+                            required
                         />
                     </div>
                     <div className='flex justify-between'>
@@ -156,7 +162,6 @@ const CreateApplicationPage = () => {
                             Back to Dashboard
                         </button>
                         <button
-                            onClick={handleSubmit}
                             className='px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200'
                             type='submit'
                         >

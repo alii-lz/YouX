@@ -1,37 +1,76 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ApplicationCard from "../components/ApplicationCard";
 
-// test data
-const initialApplications = [
-    {
-        id: 1,
-        name: "Person A",
-        income: 5000,
-        expenses: 2000,
-        assets: ["asset1", "asset2", "asset3"],
-        liabilities: ["liability1", "liability2", "liability3"],
-    },
-    {
-        id: 2,
-        name: "Person B",
-        income: 6000,
-        expenses: 2500,
-        assets: ["asset1", "asset2", "asset3"],
-        liabilities: ["liability1", "liability2", "liability3"],
-    },
-    {
-        id: 3,
-        name: "Person C",
-        income: 7000,
-        expenses: 3000,
-        assets: ["asset1", "asset2", "asset3"],
-        liabilities: ["liability1", "liability2", "liability3"],
-    },
-];
-
 const DashboardPage = () => {
+    const [applications, setApplications] = useState([]);
+    const [selectedApplicationId, setSelectedApplicationId] = useState(null);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchApplications = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const response = await fetch(
+                    "http://localhost:3001/application/all",
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error("Server error");
+                }
+
+                const data = await response.json();
+                setApplications(data);
+            } catch (error) {
+                console.error("Error fetching applications:", error);
+            }
+        };
+
+        fetchApplications();
+    }, []);
+
+    const handleDelete = async () => {
+        if (!selectedApplicationId) {
+            alert("Please select an application to delete.");
+            return;
+        }
+
+        if (
+            !window.confirm("Are you sure you want to delete this application?")
+        )
+            return;
+
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(
+                `http://localhost:3001/application/delete/${selectedApplicationId}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to delete application");
+            }
+
+            setApplications(
+                applications.filter((app) => app._id !== selectedApplicationId)
+            );
+        } catch (error) {
+            console.error("Error deleting application:", error);
+        }
+    };
+
     return (
         <div className='p-8'>
             <div className='flex justify-between items-center mb-6'>
@@ -56,7 +95,18 @@ const DashboardPage = () => {
                         </svg>
                         Create Application
                     </button>
-                    <button className='px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors duration-200 flex items-center'>
+                    <button
+                        onClick={() => {
+                            if (selectedApplicationId) {
+                                navigate(
+                                    `/update-application/${selectedApplicationId}`
+                                );
+                            } else {
+                                alert("Select an application first please");
+                            }
+                        }}
+                        className='px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors duration-200 flex items-center'
+                    >
                         <svg
                             xmlns='http://www.w3.org/2000/svg'
                             className='h-4 w-4 mr-2'
@@ -69,7 +119,10 @@ const DashboardPage = () => {
                         </svg>
                         Update Selected
                     </button>
-                    <button className='px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 flex items-center'>
+                    <button
+                        onClick={handleDelete}
+                        className='px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 flex items-center'
+                    >
                         <svg
                             xmlns='http://www.w3.org/2000/svg'
                             className='h-4 w-4 mr-2'
@@ -88,11 +141,25 @@ const DashboardPage = () => {
             </div>
 
             <div className='grid gap-6'>
-                {initialApplications.map((application) => (
-                    <ApplicationCard
+                {applications.map((application) => (
+                    <button
                         key={application.id}
-                        application={application}
-                    />
+                        onClick={() => {
+                            if (selectedApplicationId === application._id) {
+                                setSelectedApplicationId(null);
+                            } else {
+                                setSelectedApplicationId(application._id);
+                            }
+                        }}
+                    >
+                        <ApplicationCard
+                            key={application.id}
+                            application={application}
+                            isSelected={
+                                selectedApplicationId === application._id
+                            }
+                        />
+                    </button>
                 ))}
             </div>
         </div>
