@@ -1,34 +1,40 @@
 import React from "react";
 
-const ApplicationCard = ({ application }) => {
+const ApplicationCard = ({ application, isSelected }) => {
     return (
-        <div className='bg-white rounded-lg shadow-md p-6 border border-gray-200'>
-            <div className='mb-4'>
-                <h2 className='text-xl font-semibold'>{application.name}</h2>
+        <div
+            className={`${
+                isSelected ? "bg-yellow-200" : "bg-blue-100"
+            } rounded-lg shadow-md p-4 border border-black`}
+        >
+            <div className='mb-2'>
+                <h2 className='text-lg font-semibold'>
+                    Name: {application.username}
+                </h2>
             </div>
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
                 <div>
-                    <p className='font-semibold mb-2'>Financial Information</p>
-                    <p className='text-gray-600'>
+                    <p className='font-semibold mb-1'>Financial Info</p>
+                    <p className='text-gray-700'>
                         Income: ${application.income}
                     </p>
-                    <p className='text-gray-600'>
+                    <p className='text-gray-700'>
                         Expenses: ${application.expenses}
                     </p>
                 </div>
                 <div>
-                    <div className='mb-4'>
-                        <p className='font-semibold mb-2'>Assets</p>
-                        <ul className='list-disc list-inside text-gray-600'>
+                    <div className='mb-2'>
+                        <p className='font-semibold mb-1'>Assets</p>
+                        <ul className='list-disc list-inside text-gray-700'>
                             {application.assets.map((item, index) => (
                                 <li key={index}>{item}</li>
                             ))}
                         </ul>
                     </div>
 
-                    <div className='mb-4'>
-                        <p className='font-semibold mb-2'>Liabilities</p>
-                        <ul className='list-disc list-inside text-gray-600'>
+                    <div className='mb-2'>
+                        <p className='font-semibold mb-1'>Liabilities</p>
+                        <ul className='list-disc list-inside text-gray-700'>
                             {application.liabilities.map((item, index) => (
                                 <li key={index}>{item}</li>
                             ))}

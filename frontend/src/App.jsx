@@ -5,6 +5,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import CreateApplicationPage from "./pages/CreateApplicationPage";
+import UpdateApplicationPage from "./pages/UpdateApplicationPage";
 
 const App = () => {
     return (
@@ -17,6 +18,10 @@ const App = () => {
                 <Route
                     path='/create-application'
                     element={<CreateApplicationPage />}
+                />
+                <Route
+                    path='/update-application/:appId'
+                    element={<UpdateApplicationPage />}
                 />
             </Routes>
         </BrowserRouter>
