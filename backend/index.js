@@ -3,6 +3,10 @@ import cors from "cors";
 import connectToMongo from "./mongodb/connection.js";
 import { authRouter } from "./routes/authRoutes.js";
 import applicationRouter from "./routes/applicationRoutes.js";
+import swaggerUi from "swagger-ui-express";
+import YAML from "yamljs";
+
+const swaggerDocument = YAML.load("./swagger.yaml");
 
 export const app = express();
 const port = 3001;
@@ -11,6 +15,8 @@ app.use(express.json());
 
 // MongoDB connection
 connectToMongo();
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.get("/", (req, res) => {
     res.send("Testing");
