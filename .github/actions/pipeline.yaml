@@ -1,0 +1,68 @@
+name: CI/CD Pipeline
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v2
+              with:
+                  node-version: "20"
+
+            - name: Cache Node modules
+              uses: actions/cache@v2
+              with:
+                  path: "**/node_modules"
+                  key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+
+            - name: Install frontend dependencies
+              run: |
+                  cd frontend
+                  npm install
+
+            - name: Install backend dependencies for testing
+              run: |
+                  cd backend
+                  npm install
+
+            - name: Run backend tests
+              run: |
+                  cd backend
+                  npm test
+
+            - name: Build frontend
+              run: |
+                  cd frontend
+                  npm run build
+
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v1
+              with:
+                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws-region: ${{ secrets.AWS_REGION }}
+
+            - name: Deploy frontend to S3
+              run: |
+                  aws s3 sync ./frontend/build s3://${{ secrets.S3_BUCKET }} --delete
+
+            - name: Deploy backend to Lambda
+              run: |
+                  cd backend
+                  rm -rf node_modules
+                  npm install
+                  npm prune --production
+                  zip -r function.zip .
+                  aws lambda update-function-code --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} --zip-file fileb://function.zip
