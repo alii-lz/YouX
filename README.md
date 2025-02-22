@@ -31,6 +31,7 @@ Full-stack web application built using the MERN stack. App consists of a backend
 ### Prerequisites
 
 -   Node.js installed
+-   Clone the repo
 
 ### Environment Variables
 
@@ -57,8 +58,8 @@ Next, set the url in frontend/src/url.js to "http://localhost:3001"
 Next, cd into the root directory and run:
 
 ```
+npm install
 npm start
-
 ```
 
 This will start the backend and frontend simultaneously
