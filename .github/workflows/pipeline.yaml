@@ -41,6 +41,7 @@ jobs:
               run: |
                   cd backend
                   echo "TEST_MONGODB_CONNECTION=${{ secrets.TEST_MONGODB_CONNECTION }}" >> .env
+                  echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
                   npm test
 
             - name: Build frontend
