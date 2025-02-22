@@ -1,13 +1,14 @@
-import {
+const {
     connectToTestDB,
     disconnectFromTestDB,
-} from "../mongodb/testConnection.js";
-import { closeServer } from "../index.js";
-import User from "../models/User.js";
-import Application from "../models/Application.js";
+} = require("../mongodb/testConnection.js");
+const { closeServer } = require("../index.js");
+const User = require("../models/User.js");
+const Application = require("../models/Application.js");
 
 const setupTestDB = () => {
     beforeAll(async () => {
+        process.env.NODE_ENV = "test";
         await connectToTestDB();
     });
 
@@ -22,4 +23,4 @@ const setupTestDB = () => {
     });
 };
 
-export { setupTestDB };
+module.exports = { setupTestDB };

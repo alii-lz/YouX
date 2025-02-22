@@ -1,19 +1,37 @@
-import mongoose from "mongoose";
-import { MONGODB_CONNECTION } from "../config.js";
+const mongoose = require("mongoose");
+const { TEST_MONGODB_CONNECTION } = require("../config.js");
 
 let isConnected = false;
 
-export const connectToTestDB = async () => {
-    if (!isConnected) {
-        await mongoose.connect(MONGODB_CONNECTION);
-        isConnected = true;
+const connectToTestDB = async () => {
+    if (mongoose.connection.readyState === 0) {
+        try {
+            const conn = await mongoose.connect(TEST_MONGODB_CONNECTION);
+            if (!conn.connection.db.databaseName.includes("Test")) {
+                throw new Error("We have connected to wrong DB!");
+            }
+            console.log(
+                `TEST MongoDB connected to database: ${conn.connection.db.databaseName}`
+            );
+            isConnected = true;
+        } catch (error) {
+            console.error("TEST MongoDB connection error:", error.message);
+            process.exit(1);
+        }
+    } else {
+        console.log("Using existing database connection");
     }
 };
 
-export const disconnectFromTestDB = async () => {
+const disconnectFromTestDB = async () => {
     if (isConnected) {
-        await mongoose.connection.dropDatabase();
+        // so we only drop DB if we're connected to the test DB
+        if (mongoose.connection.db.databaseName.includes("Test")) {
+            await mongoose.connection.dropDatabase();
+        }
         await mongoose.connection.close();
         isConnected = false;
     }
 };
+
+module.exports = { connectToTestDB, disconnectFromTestDB };

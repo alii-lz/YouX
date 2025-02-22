@@ -79,6 +79,11 @@ const DashboardPage = () => {
         }
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        navigate("/login");
+    };
+
     return (
         <div className='p-8'>
             <div className='flex justify-between items-center mb-6'>
@@ -144,6 +149,12 @@ const DashboardPage = () => {
                             <path d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'></path>
                         </svg>
                         Delete Selected
+                    </button>
+                    <button
+                        onClick={handleLogout}
+                        className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center'
+                    >
+                        Logout
                     </button>
                 </div>
             </div>

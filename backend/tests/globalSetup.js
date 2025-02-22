@@ -1,5 +1,5 @@
-import { connectToTestDB } from "../mongodb/testConnection.js";
+const { connectToTestDB } = require("../mongodb/testConnection.js");
 
-export default async () => {
+module.exports = async () => {
     await connectToTestDB();
 };

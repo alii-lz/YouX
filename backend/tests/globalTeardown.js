@@ -1,5 +1,5 @@
-import { disconnectFromTestDB } from "../mongodb/testConnection.js";
+const { disconnectFromTestDB } = require("../mongodb/testConnection.js");
 
-export default async () => {
+module.exports = async () => {
     await disconnectFromTestDB();
 };

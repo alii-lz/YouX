@@ -1,15 +1,15 @@
-import express from "express";
-import cors from "cors";
-import connectToMongo from "./mongodb/connection.js";
-import { authRouter } from "./routes/authRoutes.js";
-import applicationRouter from "./routes/applicationRoutes.js";
-import swaggerUi from "swagger-ui-express";
-import YAML from "yamljs";
+const express = require("express");
+const cors = require("cors");
+const connectToMongo = require("./mongodb/connection");
+const { authRouter } = require("./routes/authRoutes");
+const applicationRouter = require("./routes/applicationRoutes");
+const swaggerUi = require("swagger-ui-express");
+const YAML = require("yamljs");
+const serverless = require("serverless-http");
 
 const swaggerDocument = YAML.load("./swagger.yaml");
 
-export const app = express();
-const port = 3001;
+const app = express();
 app.use(cors());
 app.use(express.json());
 
@@ -18,17 +18,27 @@ connectToMongo();
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-app.get("/", (req, res) => {
-    res.send("Testing");
+app.get("/hello", (req, res) => {
+    res.send("Hello World!");
 });
 
 app.use("/auth", authRouter);
 app.use("/application", applicationRouter);
 
-const server = app.listen(port, () => {
-    console.log(`Backend running at http://localhost:${port}`);
-});
+let server;
+if (process.env.NODE_ENV !== "production") {
+    const port = 3001;
+    server = app.listen(port, () => {
+        console.log(`Backend running at http://localhost:${port}`);
+    });
+}
 
-export const closeServer = () => {
-    server.close();
+const closeServer = () => {
+    if (server) {
+        server.close();
+    }
 };
+
+const handler = serverless(app);
+
+module.exports = { app, closeServer, handler };

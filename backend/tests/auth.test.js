@@ -1,8 +1,8 @@
-import request from "supertest";
-import User from "../models/User.js";
-import jwt from "jsonwebtoken";
-import { setupTestDB } from "./testSetup.js";
-import { app } from "../index.js";
+const request = require("supertest");
+const User = require("../models/User.js");
+const jwt = require("jsonwebtoken");
+const { setupTestDB } = require("./testSetup.js");
+const { app } = require("../index.js");
 
 describe("Authentication Endpoints", () => {
     setupTestDB();
@@ -16,7 +16,9 @@ describe("Authentication Endpoints", () => {
             });
 
             expect(res.status).toBe(201);
-            expect(res.body.message).toBe("User registered successfully");
+            expect(res.body.message).toBe(
+                "User registered successfully, You will be redirected. Please wait"
+            );
 
             const user = await User.findOne({ email: "ali@gmail.com" });
             expect(user).toBeTruthy();
