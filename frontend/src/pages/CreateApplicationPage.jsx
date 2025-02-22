@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import url from "../url.js";
 
 const CreateApplicationPage = () => {
     const navigate = useNavigate();
@@ -23,7 +25,6 @@ const CreateApplicationPage = () => {
         const token = localStorage.getItem("token");
         if (!token) {
             navigate("/login");
-            return;
         }
     }, [navigate]);
 
@@ -35,35 +36,29 @@ const CreateApplicationPage = () => {
                 navigate("/login");
                 return;
             }
-            const response = await fetch(
-                "http://localhost:3001/application/create",
+
+            await axios.post(
+                `${url}/application/create`,
                 {
-                    method: "POST",
+                    username: form.name,
+                    income: Number(form.income),
+                    expenses: Number(form.expenses),
+                    assets: form.assets
+                        .split(",")
+                        .map((item) => item.trim())
+                        .filter((item) => item !== ""),
+                    liabilities: form.liabilities
+                        .split(",")
+                        .map((item) => item.trim())
+                        .filter((item) => item !== ""),
+                },
+                {
                     headers: {
-                        "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`,
                     },
-                    body: JSON.stringify({
-                        username: form.name,
-                        income: Number(form.income),
-                        expenses: Number(form.expenses),
-                        assets: form.assets
-                            .split(",")
-                            .map((item) => item.trim())
-                            .filter((item) => item !== ""),
-                        liabilities: form.liabilities
-                            .split(",")
-                            .map((item) => item.trim())
-                            .filter((item) => item !== ""),
-                    }),
                 }
             );
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            await response.json();
             navigate("/dashboard");
         } catch (error) {
             console.error("Error creating application:", error);
