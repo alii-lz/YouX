@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import url from "../url.js";
 
 const UpdateApplicationPage = () => {
     const { appId } = useParams();
@@ -20,19 +22,15 @@ const UpdateApplicationPage = () => {
                     navigate("/login");
                     return;
                 }
-                const response = await fetch(
-                    `http://localhost:3001/application/get/${appId}`,
+                const response = await axios.get(
+                    `${url}/application/get/${appId}`,
                     {
-                        method: "GET",
                         headers: {
                             Authorization: `Bearer ${token}`,
                         },
                     }
                 );
-                if (!response.ok) {
-                    throw new Error("Failed to fetch application");
-                }
-                const data = await response.json();
+                const data = response.data;
                 setForm({
                     name: data.username,
                     income: data.income,
@@ -56,33 +54,28 @@ const UpdateApplicationPage = () => {
         e.preventDefault();
         try {
             const token = localStorage.getItem("token");
-            const response = await fetch(
-                `http://localhost:3001/application/update/${appId}`,
+            await axios.put(
+                `${url}/application/update/${appId}`,
                 {
-                    method: "PUT",
+                    username: form.name,
+                    income: Number(form.income),
+                    expenses: Number(form.expenses),
+                    assets: form.assets
+                        .split(",")
+                        .map((item) => item.trim())
+                        .filter((item) => item !== ""),
+                    liabilities: form.liabilities
+                        .split(",")
+                        .map((item) => item.trim())
+                        .filter((item) => item !== ""),
+                },
+                {
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`,
                     },
-                    body: JSON.stringify({
-                        username: form.name,
-                        income: Number(form.income),
-                        expenses: Number(form.expenses),
-                        assets: form.assets
-                            .split(",")
-                            .map((item) => item.trim())
-                            .filter((item) => item !== ""),
-                        liabilities: form.liabilities
-                            .split(",")
-                            .map((item) => item.trim())
-                            .filter((item) => item !== ""),
-                    }),
                 }
             );
-
-            if (!response.ok) {
-                throw new Error("Failed to update application");
-            }
 
             navigate("/dashboard");
         } catch (error) {

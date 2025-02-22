@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import url from "../url.js";
 
 const LoginPage = () => {
     const [email, setEmail] = useState("");
@@ -12,25 +14,22 @@ const LoginPage = () => {
         setError("");
 
         try {
-            const response = await fetch("http://localhost:3001/auth/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email, password }),
-            });
+            const response = await axios.post(
+                `${url}/auth/login`,
+                { email, password },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                setError(data.error || "Failed to login. Try again.");
-                return;
-            }
+            const data = response.data;
 
             localStorage.setItem("token", data.token);
             navigate("/dashboard");
-        } catch (e) {
-            setError("Error!. Try again bro.");
+        } catch (error) {
+            setError("ERROR please try again");
         }
     };
 

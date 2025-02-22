@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import url from "../url.js";
 
 const RegisterPage = () => {
     const [email, setEmail] = useState("");
@@ -15,28 +17,22 @@ const RegisterPage = () => {
         setError("");
 
         try {
-            const response = await fetch(
-                "http://localhost:3001/auth/register",
+            const response = await axios.post(
+                `${url}/auth/register`,
+                { name, email, password },
                 {
-                    method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ name, email, password }),
                 }
             );
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                setError(data.error || "ERROR.");
-                return;
-            }
+            const data = response.data;
 
             setMessage(data.message);
             setTimeout(() => navigate("/login"), 1250);
-        } catch (e) {
-            setError("Error!. Try again bro.");
+        } catch (error) {
+            setError(error.response?.data?.error || "ERROR.");
         }
     };
 

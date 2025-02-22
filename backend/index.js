@@ -10,8 +10,9 @@ const serverless = require("serverless-http");
 const swaggerDocument = YAML.load("./swagger.yaml");
 
 const app = express();
-app.use(cors());
+
 app.use(express.json());
+app.use(cors());
 
 // MongoDB connection
 connectToMongo();
@@ -41,4 +42,4 @@ const closeServer = () => {
 
 const handler = serverless(app);
 
-module.exports = { app, closeServer, handler };
+module.exports = { handler, app, closeServer };
