@@ -1,7 +1,6 @@
 {
     "name": "backend",
     "version": "1.0.0",
-    "type": "module",
     "main": "index.js",
     "scripts": {
         "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles",
@@ -20,6 +19,7 @@
         "jsonwebtoken": "^9.0.2",
         "mongodb": "^6.13.0",
         "mongoose": "^8.10.1",
+        "serverless-http": "^3.2.0",
         "swagger-jsdoc": "^6.2.8",
         "swagger-ui-express": "^5.0.1",
         "yamljs": "^0.3.0"

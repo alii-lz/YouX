@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const CreateApplicationPage = () => {
@@ -18,6 +18,14 @@ const CreateApplicationPage = () => {
             [name]: value,
         });
     };
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            navigate("/login");
+            return;
+        }
+    }, [navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

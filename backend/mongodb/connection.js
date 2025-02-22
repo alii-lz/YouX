@@ -1,8 +1,15 @@
-import mongoose from "mongoose";
-import { MONGODB_CONNECTION } from "../config.js";
+const mongoose = require("mongoose");
+const {
+    MONGODB_CONNECTION,
+    TEST_MONGODB_CONNECTION,
+    NODE_ENV,
+} = require("../config");
 
 const connectMongoDB = async () => {
-    if (!MONGODB_CONNECTION) {
+    const connectionString =
+        NODE_ENV === "test" ? TEST_MONGODB_CONNECTION : MONGODB_CONNECTION;
+
+    if (!connectionString) {
         console.error(
             "MongoDB connection string is undefined. It's probably an issue with the .env file."
         );
@@ -10,13 +17,15 @@ const connectMongoDB = async () => {
     }
 
     try {
-        await mongoose.connect(MONGODB_CONNECTION, {
+        const conn = await mongoose.connect(connectionString, {
             serverSelectionTimeoutMS: 10000,
         });
-        console.log("MongoDB connection success!!");
+        console.log(
+            `MongoDB connected to database: ${conn.connection.db.databaseName}`
+        );
     } catch (error) {
         console.error("MongoDB connection error:", error.message);
     }
 };
 
-export default connectMongoDB;
+module.exports = connectMongoDB;

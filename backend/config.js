@@ -1,11 +1,16 @@
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
-import dotenv from "dotenv";
+const path = require("path");
+const dotenv = require("dotenv");
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+dotenv.config({ path: path.join(__dirname, ".env") });
 
-dotenv.config({ path: join(__dirname, ".env") });
+const MONGODB_CONNECTION = process.env.MONGODB_CONNECTION;
+const JWT_SECRET = process.env.JWT_SECRET;
+const NODE_ENV = process.env.NODE_ENV;
+const TEST_MONGODB_CONNECTION = process.env.TEST_MONGODB_CONNECTION;
 
-export const MONGODB_CONNECTION = process.env.MONGODB_CONNECTION;
-export const JWT_SECRET = process.env.JWT_SECRET;
+module.exports = {
+    MONGODB_CONNECTION,
+    JWT_SECRET,
+    NODE_ENV,
+    TEST_MONGODB_CONNECTION,
+};

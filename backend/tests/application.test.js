@@ -1,11 +1,11 @@
-import { app } from "../index.js";
-import { setupTestDB } from "./testSetup.js";
-import request from "supertest";
-import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
-import User from "../models/User.js";
-import Application from "../models/Application.js";
-import { JWT_SECRET } from "../config.js";
+const request = require("supertest");
+const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
+const { app } = require("../index.js");
+const { setupTestDB } = require("./testSetup.js");
+const User = require("../models/User.js");
+const Application = require("../models/Application.js");
+const { JWT_SECRET } = require("../config.js");
 
 describe("Application Endpoints", () => {
     let token;
@@ -15,7 +15,6 @@ describe("Application Endpoints", () => {
     setupTestDB();
 
     beforeEach(async () => {
-        // Creating a temp user
         const user = await User.create({
             name: "Ali Ahmed",
             email: "ali@gmail.com",
@@ -24,7 +23,6 @@ describe("Application Endpoints", () => {
         userId = user._id;
         token = jwt.sign({ id: userId }, JWT_SECRET);
 
-        // Create a test application
         const application = await Application.create({
             userId,
             username: "testuser",
@@ -60,7 +58,6 @@ describe("Application Endpoints", () => {
 
         it("should return error without authentication", async () => {
             const res = await request(app).post("/application/create").send({});
-
             expect(res.status).toBe(401);
         });
     });

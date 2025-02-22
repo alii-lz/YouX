@@ -1,15 +1,14 @@
-import express from "express";
-import Application from "../models/Application.js";
-import { authMiddleware } from "./authRoutes.js";
+const express = require("express");
+const app = require("../models/Application.js");
+const { authMiddleware } = require("./authRoutes.js");
 
 const applicationRouter = express.Router();
 
 // Create an application
 applicationRouter.post("/create", authMiddleware, async (req, res) => {
-    console.log("called");
     const { username, email, income, expenses, assets, liabilities } = req.body;
     try {
-        const application = new Application({
+        const application = new app({
             userId: req.userId,
             username,
             email,
@@ -20,11 +19,7 @@ applicationRouter.post("/create", authMiddleware, async (req, res) => {
         });
 
         const savedApp = await application.save();
-
-        // to remove unwanted Mongoose fields
-        const appDataObj = savedApp.toObject();
-
-        res.status(201).json(appDataObj);
+        res.status(201).json(savedApp.toObject());
     } catch (error) {
         res.status(500).json({ error: "Server error" });
     }
@@ -33,17 +28,17 @@ applicationRouter.post("/create", authMiddleware, async (req, res) => {
 // Get all applications
 applicationRouter.get("/all", authMiddleware, async (req, res) => {
     try {
-        const applications = await Application.find({ userId: req.userId });
+        const applications = await app.find({ userId: req.userId });
         res.status(200).json(applications);
     } catch (error) {
         res.status(500).json({ error: "Server error" });
     }
 });
 
-// Fetches a specific application
+// Fetch a specific application
 applicationRouter.get("/get/:id", authMiddleware, async (req, res) => {
     try {
-        const application = await Application.findOne({
+        const application = await app.findOne({
             _id: req.params.id,
             userId: req.userId,
         });
@@ -61,7 +56,7 @@ applicationRouter.get("/get/:id", authMiddleware, async (req, res) => {
 // Update an application
 applicationRouter.put("/update/:id", authMiddleware, async (req, res) => {
     try {
-        const updatedApplication = await Application.findOneAndUpdate(
+        const updatedApplication = await app.findOneAndUpdate(
             { _id: req.params.id, userId: req.userId },
             req.body,
             { new: true }
@@ -78,7 +73,7 @@ applicationRouter.put("/update/:id", authMiddleware, async (req, res) => {
 // Delete an application
 applicationRouter.delete("/delete/:id", authMiddleware, async (req, res) => {
     try {
-        const deletedApplication = await Application.findOneAndDelete({
+        const deletedApplication = await app.findOneAndDelete({
             _id: req.params.id,
             userId: req.userId,
         });
@@ -91,4 +86,4 @@ applicationRouter.delete("/delete/:id", authMiddleware, async (req, res) => {
     }
 });
 
-export default applicationRouter;
+module.exports = applicationRouter;
