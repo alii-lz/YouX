@@ -14,35 +14,31 @@ jobs:
 
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
 
             - name: Set up Node.js
-              uses: actions/setup-node@v2
+              uses: actions/setup-node@v4
               with:
                   node-version: "20"
-
-            - name: Cache Node modules
-              uses: actions/cache@v2
-              with:
-                  path: "**/node_modules"
-                  key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+                  cache: "npm"
 
             - name: Install frontend dependencies
               run: |
                   cd frontend
-                  npm install
+                  npm ci
 
             - name: Install backend dependencies for testing
               run: |
                   cd backend
-                  npm install
+                  npm ci
 
             - name: Run backend tests
               run: |
                   cd backend
-                  echo "TEST_MONGODB_CONNECTION=${{ secrets.TEST_MONGODB_CONNECTION }}" >> .env
-                  echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
                   npm test
+              env:
+                  TEST_MONGODB_CONNECTION: ${{ secrets.TEST_MONGODB_CONNECTION }}
+                  JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
             - name: Build frontend
               run: |
@@ -50,7 +46,7 @@ jobs:
                   npm run build
 
             - name: Configure AWS credentials
-              uses: aws-actions/configure-aws-credentials@v1
+              uses: aws-actions/configure-aws-credentials@v2
               with:
                   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
                   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -64,7 +60,6 @@ jobs:
               run: |
                   cd backend
                   rm -rf node_modules
-                  npm install
-                  npm prune --production
+                  npm ci --production
                   zip -r function.zip .
                   aws lambda update-function-code --function-name ${{ secrets.LAMBDA_FUNCTION_NAME }} --zip-file fileb://function.zip
